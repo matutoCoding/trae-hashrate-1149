@@ -12,13 +12,10 @@ import {
   Row,
   Col,
   Statistic,
-  message,
-  Popconfirm,
-  Progress
+  message
 } from 'antd';
 import {
   FileTextOutlined,
-  DollarOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
   DownloadOutlined,
@@ -30,7 +27,8 @@ import { getBills, getBillDetail, updateBillStatus, exportBill, generateBill, ge
 import { getReservationsByUser, getReservationById } from '../services/scheduleService';
 import { useAppStore } from '../store/useAppStore';
 import { formatDateTime, formatMoney, formatDuration, getStatusColor, getStatusText } from '../utils/format';
-import type { Bill, BillStatus, BillDetail } from '@shared/types';
+import type { Bill, BillStatus } from '@shared/types';
+import type { BillDetail } from '../services/billService';
 import { mockInstruments, mockUsers } from '../services/mockData';
 
 const { RangePicker } = DatePicker;
@@ -196,7 +194,7 @@ export default function Bills() {
       title: '操作',
       key: 'action',
       width: 200,
-      fixed: 'right',
+      fixed: 'right' as const,
       render: (_: any, record: Bill) => (
         <Space>
           <Button

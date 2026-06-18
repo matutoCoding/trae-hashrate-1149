@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Form, Input, Button, Select, Card, message } from 'antd';
-import { UserOutlined, LockOutlined, SafetyOutlined } from '@ant-design/icons';
+import { UserOutlined, SafetyOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
 import type { UserRole } from '@shared/types';

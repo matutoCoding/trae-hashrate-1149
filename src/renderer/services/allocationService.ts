@@ -36,11 +36,14 @@ export function isInstrumentAvailable(
   excludeReservationId?: string
 ): boolean {
   const instrument = mockInstruments.find(i => i.id === instrumentId);
-  if (!instrument || instrument.status !== 'available') {
+  if (!instrument) return false;
+
+  if (instrument.status === 'maintenance' || instrument.status === 'offline') {
     return false;
   }
 
   const overlapping = mockReservations.find(r => {
+    if (r.instrumentId !== instrumentId) return false;
     if (excludeReservationId && r.id === excludeReservationId) return false;
     if (r.status === 'cancelled') return false;
     const rStart = new Date(r.startTime);
@@ -55,7 +58,7 @@ export function isInstrumentAvailable(
 
 export function calculateLoadScore(
   instrumentId: string,
-  startTime: Date,
+  _startTime: Date,
   endTime: Date
 ): number {
   const instrument = mockInstruments.find(i => i.id === instrumentId);

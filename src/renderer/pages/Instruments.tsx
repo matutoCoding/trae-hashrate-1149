@@ -30,10 +30,9 @@ import {
   getInstruments,
   getInstrumentModels,
   createInstrument,
-  updateInstrument,
-  getInstrumentById
+  updateInstrument
 } from '../services/scheduleService';
-import { getInstrumentLoad, getAllInstrumentLoads } from '../services/allocationService';
+import { getAllInstrumentLoads } from '../services/allocationService';
 import { formatMoney, formatDuration, getStatusColor, getStatusText } from '../utils/format';
 import { getBillingRule } from '../services/billingService';
 import type { Instrument, InstrumentModel, InstrumentStatus } from '@shared/types';
@@ -168,8 +167,8 @@ export default function Instruments() {
     {
       title: '操作',
       key: 'action',
-      fixed: 'right',
       width: 150,
+      fixed: 'right' as const,
       render: (_: any, record: Instrument) => (
         <Space>
           <Button
@@ -199,8 +198,8 @@ export default function Instruments() {
     inUse: instruments.filter(i => i.status === 'in-use').length,
     maintenance: instruments.filter(i => i.status === 'maintenance').length,
     avgLoad: loads.length > 0
-      ? (loads.reduce((sum, l) => sum + l.loadPercentage, 0) / loads.length).toFixed(1)
-      : '0'
+      ? Math.round(loads.reduce((sum, l) => sum + l.loadPercentage, 0) / loads.length * 10) / 10
+      : 0
   };
 
   return (
@@ -471,7 +470,6 @@ export default function Instruments() {
                               ? '#FF7D00'
                               : '#00B42A'
                           }
-                          size="large"
                         />
                         <div className="flex justify-between mt-4 text-sm text-gray-500">
                           <span>已使用 {load.usedHours} 小时</span>

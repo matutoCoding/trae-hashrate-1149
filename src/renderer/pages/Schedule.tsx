@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Row, Col, Card, List, Tag, Calendar, Badge, Button, Select, Modal, Progress, Descriptions, Space } from 'antd';
+import { Row, Col, Card, List, Tag, Calendar, Button, Select, Modal, Progress, Descriptions, Space } from 'antd';
 import { CalendarOutlined, ClockCircleOutlined, EnvironmentOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getInstruments, getInstrumentModels, getInstrumentSchedule, getInstrumentById, getInstrumentModelById } from '../services/scheduleService';
@@ -37,7 +37,6 @@ export default function Schedule() {
 
   const getDateCellContent = (value: dayjs.Dayjs) => {
     if (!selectedInstrument) return null;
-    const date = value.toDate();
     const daySchedule = schedule.filter(r => {
       const rDate = dayjs(r.startTime).format('YYYY-MM-DD');
       return rDate === value.format('YYYY-MM-DD');

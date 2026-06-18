@@ -17,10 +17,13 @@ export default defineConfig({
       }
     },
     plugins: [react()],
-    css: {
-      postcss: {
-        plugins: [require('tailwindcss'), require('autoprefixer')]
-      }
+    build: {
+      rollupOptions: {
+        input: {
+          index: path.resolve(__dirname, 'src/renderer/index.html')
+        }
+      },
+      chunkSizeWarningLimit: 2000
     }
   }
 });

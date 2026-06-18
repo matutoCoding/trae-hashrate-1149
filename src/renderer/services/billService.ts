@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import type { Bill, BillStatus, FeeCalculationResult } from '@shared/types';
-import { mockBills, mockReservations, mockInstruments } from './mockData';
-import { calculateFeeByModelId } from './billingService';
+import { mockBills, mockReservations, mockInstruments, mockInstrumentModels } from './mockData';
+import { calculateFeeByModelId, getBillingRule } from './billingService';
 
 export interface BillFilter {
   userId?: string;
@@ -93,6 +93,8 @@ export function getBillDetail(billId: string): BillDetail | null {
   if (!reservation) return null;
 
   const instrument = mockInstruments.find(i => i.id === reservation.instrumentId);
+  const model = instrument ? mockInstrumentModels.find(m => m.id === instrument.modelId) : null;
+  const billingRule = instrument ? getBillingRule(instrument.modelId) : undefined;
 
   const feeBreakdown: FeeCalculationResult = {
     totalFee: bill.totalAmount,
@@ -101,9 +103,9 @@ export function getBillDetail(billId: string): BillDetail | null {
     capDiscount: bill.capDiscount,
     billableMinutes: bill.billableMinutes,
     actualMinutes: bill.actualMinutes,
-    ratePerHour: 0,
-    baseMinutes: 0,
-    capMinutes: 0
+    ratePerHour: billingRule?.ratePerHour ?? 0,
+    baseMinutes: billingRule?.baseMinutes ?? 0,
+    capMinutes: billingRule?.capMinutes ?? 0
   };
 
   return {
@@ -111,7 +113,7 @@ export function getBillDetail(billId: string): BillDetail | null {
     reservation: {
       id: reservation.id,
       instrumentName: instrument?.name || '未知',
-      instrumentModel: instrument?.modelId || '未知',
+      instrumentModel: model?.name || '未知',
       startTime: reservation.startTime,
       endTime: reservation.endTime,
       actualStartTime: reservation.actualStartTime,

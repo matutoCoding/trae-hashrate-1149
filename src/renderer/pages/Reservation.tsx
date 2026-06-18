@@ -34,6 +34,8 @@ import { useNavigate } from 'react-router-dom';
 import { allocateInstrument, getAvailableInstruments } from '../services/allocationService';
 import { getInstrumentModels, getReservationsByUser, updateReservationStatus, cancelReservation } from '../services/scheduleService';
 import { getUserQualificationStatus, getQualificationTypeInfo } from '../services/qualificationService';
+import { generateBill } from '../services/billService';
+import { calculateFeeByModelId } from '../services/billingService';
 import { useAppStore } from '../store/useAppStore';
 import { formatDateTime, formatDuration, formatMoney, getStatusColor, getStatusText } from '../utils/format';
 import type {
@@ -42,7 +44,7 @@ import type {
   Reservation,
   FeeCalculationResult
 } from '@shared/types';
-import { mockInstruments, mockUsers } from '../services/mockData';
+import { mockInstruments } from '../services/mockData';
 
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
@@ -102,6 +104,12 @@ export default function Reservation() {
       }
 
       const candidates = getAvailableInstruments(selectedModel, startTime, endTime, currentUser.id);
+      candidates.sort((a, b) => {
+        if (a.available && !b.available) return -1;
+        if (!a.available && b.available) return 1;
+        return a.loadScore - b.loadScore;
+      });
+
       const availableCount = candidates.filter(c => c.available).length;
 
       if (availableCount === 0) {
@@ -109,9 +117,13 @@ export default function Reservation() {
         return;
       }
 
+      const durationMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
+      const feeEstimate = calculateFeeByModelId(durationMinutes, selectedModel);
+
       setAllocationResult({
         success: true,
-        candidates
+        candidates,
+        feeEstimate: feeEstimate || undefined
       });
       setCurrentStep(1);
     });
@@ -175,7 +187,8 @@ export default function Reservation() {
   const handleEndUse = (id: string) => {
     const updated = updateReservationStatus(id, 'completed');
     if (updated) {
-      message.success('使用已结束，账单已生成');
+      generateBill(id);
+      message.success('使用已结束，账单已自动生成');
       if (currentUser) {
         setMyReservations(getReservationsByUser(currentUser.id));
       }
@@ -297,7 +310,6 @@ export default function Reservation() {
                     size="small"
                     dataSource={allocationResult.candidates}
                     renderItem={(candidate, index) => {
-                      const instrument = mockInstruments.find(i => i.id === candidate.instrument.id);
                       return (
                         <List.Item
                           className={`rounded-lg mb-2 px-3 py-2 ${

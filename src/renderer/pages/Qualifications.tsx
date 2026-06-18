@@ -13,7 +13,6 @@ import {
   Descriptions,
   Row,
   Col,
-  Statistic,
   message,
   Upload
 } from 'antd';
@@ -68,7 +67,7 @@ export default function Qualifications() {
   const handleApply = () => {
     form.validateFields().then(values => {
       const [issueDate, expiryDate] = values.validPeriod;
-      const newQual = applyQualification({
+      applyQualification({
         userId: currentUser!.id,
         type: values.type,
         typeName: qualificationTypes.find(t => t.type === values.type)?.name || '',
@@ -345,7 +344,7 @@ export default function Qualifications() {
             <RangePicker
               style={{ width: '100%' }}
               placeholder={['发证日期', '到期日期']}
-              disabledDate={(current) => current && current > dayjs().add(10, 'year').toDate()}
+              disabledDate={(current: dayjs.Dayjs) => current && current > dayjs().add(10, 'year')}
             />
           </Form.Item>
 

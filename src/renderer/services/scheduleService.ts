@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import type {
   Instrument,
   InstrumentModel,
+  InstrumentStatus,
   Reservation,
   DashboardStats
 } from '@shared/types';
@@ -25,10 +26,10 @@ export function getInstruments(filter?: InstrumentFilter): Instrument[] {
     result = result.filter(i => i.modelId === filter.modelId);
   }
   if (filter?.status) {
-    result = result.filter(i => i.status === filter.status);
+    result = result.filter(i => i.status === filter.status as InstrumentStatus);
   }
   if (filter?.location) {
-    result = result.filter(i => i.location.includes(filter.location));
+    result = result.filter(i => i.location.includes(filter.location!));
   }
 
   return result;

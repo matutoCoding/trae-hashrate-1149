@@ -27,7 +27,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser, sidebarCollapsed, toggleSidebar, logout } = useAppStore();
+  const { currentUser, logout } = useAppStore();
   const [collapsed, setCollapsed] = useState(false);
 
   const menuItems: MenuProps['items'] = [
@@ -143,7 +143,10 @@ export default function Layout({ children }: LayoutProps) {
               className="!text-lg"
             />
             <h2 className="text-lg font-semibold text-gray-800">
-              {menuItems.find(m => m?.key === location.pathname)?.label as string}
+              {(() => {
+                const item = menuItems?.find(m => m && 'key' in m && (m as any).key === location.pathname);
+                return item && 'label' in item ? (item as any).label : '';
+              })()}
             </h2>
           </div>
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">

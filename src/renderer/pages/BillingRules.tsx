@@ -12,7 +12,8 @@ import {
   Row,
   Col,
   message,
-  Tooltip
+  Tooltip,
+  Alert
 } from 'antd';
 import {
   SettingOutlined,
@@ -24,7 +25,7 @@ import {
 import { getAllBillingRules, updateBillingRule, calculateFee } from '../services/billingService';
 import { getInstrumentModels } from '../services/scheduleService';
 import { formatMoney, formatDuration } from '../utils/format';
-import type { BillingRule, InstrumentModel, FeeCalculationResult } from '@shared/types';
+import type { BillingRule, InstrumentModel } from '@shared/types';
 
 export default function BillingRules() {
   const [rules, setRules] = useState<BillingRule[]>([]);
@@ -177,7 +178,7 @@ export default function BillingRules() {
               min={1}
               max={1440}
               value={demoMinutes}
-              onChange={setDemoMinutes}
+              onChange={(v) => setDemoMinutes(v ?? 120)}
               addonBefore="使用"
               addonAfter="分钟"
             />
